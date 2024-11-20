@@ -1,0 +1,422 @@
+/*App.css */
+:root {
+  --bg-color: #1e1e1e;
+  --header-bg: #2a2a2a;
+  --card-bg: #363636;
+  --card-bg-highlight: #474747;
+  --hover-bg-color: #585858;
+  --secondary-text-color: #909090;
+  --text-color: #e0e0e0;
+  --higlight-button: #9A7D0A;
+  --increase-color: #4caf50;
+  --decrease-color: #f40a06;
+  --constant-color: #006dfb;
+  --increase-sign: '↑';
+  --constant-sign: '→';
+  --decrease-sign: '↓';
+  --width-limit: 1300px;
+  --card-min-dimension: 200px;
+  --time-option-dimension: 55px;
+  --footer-height: 3rem;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: var(--hover-bg-color);
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh; /* Ensure body covers the full viewport height */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  min-width: calc(var(--time-option-dimension) * 10);
+}
+
+#button-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-dimension), 1fr));
+  grid-gap: 1rem;
+  margin: 1rem 0;
+}
+
+button {
+  cursor: pointer;
+  margin: 0;
+  padding: 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--card-bg-highlight);
+  color: var(--text-color);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--higlight-button);
+}
+
+button[data-button-text]:before {
+  content: attr(data-button-text);
+  display: inline;
+}
+
+button[data-button-text='replace'] {
+  display: block;
+  margin-top: 1rem;
+  width: 100%;
+  color: var(--bg-color);
+}
+
+#button-home {
+  float: right;
+  padding: 0 1rem;
+  display: block; /* Hidden in grid view, visible in the details view */
+}
+
+#button-home svg path {
+  fill: var(--text-color);;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border-radius: 50%;
+  background-color: var(--card-bg-highlight);
+  color: var(--bg-color);
+}
+
+.close-button:before,
+.close-button:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 23px; /*controls the cross width*/
+  height: 3px; /*controls the cross boldness*/
+  background-color: currentColor;
+  transform-origin: center;
+}
+
+.close-button:before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-button:after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+header {
+  background-color: var(--header-bg);
+}
+
+header h1 {
+  display: inline-block;
+}
+
+header > div,
+main {
+  margin: 0 auto;
+  max-width: var(--width-limit);
+  width: 100%;
+  padding: 1rem;
+}
+
+main {
+  padding-bottom: calc(20px + var(--footer-height)); /* Padding to prevent overlap with the footer */
+  min-height: calc(100vh - var(--footer-height) - 2rem);
+}
+
+/* Stocks Grid */
+#stocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min-dimension), 1fr));
+  gap: 1.5rem;
+  list-style: none;
+}
+
+#stocks-grid > li {
+  position: relative;
+  padding: 1rem;
+  min-width: var(--card-min-dimension);
+  min-height: var(--card-min-dimension);
+  border-radius: 5px;
+  background-color: var(--card-bg);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+#stocks-grid > li:hover {
+  transform: scale(1.05);
+}
+
+#stocks-grid li > section {
+  border: 1px solid var(--header-bg);
+  border-radius: 5px;
+  list-style: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#stocks-grid li > section:hover {
+  border-color: var(--higlight-button);
+}
+
+#stocks-grid > .empty-slot {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-style: dashed;
+  border-color: var(--card-bg);
+  background-color: transparent;
+}
+
+#stocks-grid > .empty-slot:before,
+#stocks-grid > .empty-slot:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  padding: 7px;
+  background-color: var(--card-bg);
+  transform-origin: center;
+}
+
+#stocks-grid > .empty-slot:before {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+#stocks-grid > .empty-slot:after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+#stocks-grid > li.empty-slot > button,
+#stocks-grid > li.empty-slot > section {
+  display: none;
+}
+
+#add-stock-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10;
+  font-size: 1.5rem;
+}
+
+#add-stock-dialog.open {
+  display: block;
+}
+
+#add-stock-dialog > section {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 1rem 0;
+  padding: 1rem;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 8px;
+  background-color: var(--header-bg);
+  color: var(--text-color);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@media (max-width: 500px) {
+  #add-stock-dialog > section {
+    width: 80%;
+  }
+}
+#add-stock-dialog #stock-input {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  border: 1px solid var(--card-bg-highlight);
+  border-radius: 4px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-size: 1.3rem;
+}
+
+/* Stock Details */
+.stock-symbol {
+  font-size: 2rem;
+  font-weight: bold;
+}
+#stock-details .stock-name{
+  font-size: 2rem;
+}
+.stock-name {
+  margin: 1rem auto;
+  color: var(--hover-bg-color);
+  font-size: 1.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.current-price,
+.price-change {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-change {
+  color: var(--constant-color);
+}
+
+.price-change:after {
+  content: '%';
+}
+
+.price-change:before {
+  content: var(--constant-sign);
+  padding: 0 5px;
+}
+
+.price-change.positive {
+  color: var(--increase-color);
+}
+
+.price-change.positive:before {
+  content: var(--increase-sign);
+}
+
+.price-change.negative {
+  color: var(--decrease-color);
+}
+
+.price-change.negative:before {
+  content: var(--decrease-sign);
+}
+
+#stock-details {
+  display: block;
+  margin: 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--header-bg);
+}
+
+#stock-details .stock-symbol,
+#stock-details .stock-name {
+  display: initial;
+}
+
+#stock-details ul {
+  margin: 1rem 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem;
+  list-style: none;
+}
+
+#stock-details ul li {
+  margin: 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: var(--card-bg);
+}
+
+#stock-details #time-options {
+  margin: 1rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(var(--time-option-dimension), 1fr));
+  color: black;
+}
+
+#stock-details [data-period] {
+  margin-right: 0.5rem;
+  padding: 0.5rem;
+  display: inline-block;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#stock-details [data-period].active,
+#stock-details [data-period]:hover {
+  background-color: var(--card-bg-highlight);
+  color: var(--text-color);
+}
+
+#stock-details [data-period]::after {
+  content: attr(data-period);
+  display: inline;
+}
+
+#stock-details #chart-container {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--card-bg-highlight);
+  max-height: 50vh;
+  min-height: var(--card-min-dimension);
+}
+
+#stock-details canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
+
+#stock-details [data-stat] {
+  font-weight: bold;
+}
+
+#stock-details [data-stat]::before {
+  content: attr(data-stat) ":";
+  display: inline-block;
+  margin-right: 8px;
+  width: 12rem; /* adjust this for the label to be not wrap */
+  text-transform: capitalize;
+  color: var(--secondary-text-color);
+}
+
+#stock-details .stock-name:before,
+#stock-details [data-stat] > .low::after {
+  content: ' — ';
+}
+
+/* Footer stays at the bottom of the page */
+footer {
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  padding: 1rem;
+  width: 100%;
+  height: var(--footer-height);
+  font-size: 0.9rem;
+  text-align: center;
+  background-color: var(--header-bg);
+  color: var(--secondary-text-color);
+}

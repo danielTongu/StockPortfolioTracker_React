@@ -1,0 +1,70 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# IntelliJ IDEA specific files
+.idea/
+*.iml
+out/
+
+# Node modules (React app dependency folder)
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Build output (React build directories)
+build/
+dist/
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# macOS system files
+.DS_Store
+Thumbs.db
+
+# Temporary/backup files
+*.bak
+*.tmp
+
+# Public coverage reports (test coverage)
+coverage/
+
+# Other IDE/Editor files
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Generated cache files by tools
+*.cache/
+.parcel-cache/
+.eslintcache
+stylelintcache
