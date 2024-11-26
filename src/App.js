@@ -316,6 +316,13 @@ function StockDialog(props) {
         }
     }, []);
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            onSubmit(); // Trigger the submission
+        }
+    };
+
     return (
         <dialog id='add-stock-dialog' className={'open'}>
             <section>
@@ -329,6 +336,7 @@ function StockDialog(props) {
                     placeholder="Enter Stock Symbol"
                     ref={inputRef} // Attach the ref to the input
                     maxLength={MAX_STOCK_SYMBOL_LENGTH} // Set the maximum length
+                    onKeyDown={handleKeyDown}
                 />
                 <div id='button-group'>
                     <button data-button-text='ok' onClick={onSubmit}></button>
