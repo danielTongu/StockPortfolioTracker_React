@@ -1,4 +1,5 @@
 /*App.css */
+
 :root {
     --bg-color: #1e1e1e;
     --header-bg: #2a2a2a;
@@ -169,6 +170,39 @@ main {
     transform: scale(1.05);
 }
 
+#stocks-grid > li.empty-slot {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border: 2px dashed var(--card-bg-highlight);
+    background-color: transparent;
+}
+
+#stocks-grid > li.empty-slot:before,
+#stocks-grid > li.empty-slot:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%; /* adjust this to scale the cross*/
+    padding: 1px; /* adjust this for the boldness of the cross */
+    background-color: var(--card-bg-highlight);
+    transform-origin: center;
+}
+
+#stocks-grid > li.empty-slot:before {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+#stocks-grid > li.empty-slot:after {
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+#stocks-grid > li.empty-slot > button,
+#stocks-grid > li.empty-slot > section {
+    display: none;
+}
+
 #stocks-grid li > section {
     position: relative;
     border: 1px solid var(--header-bg);
@@ -193,39 +227,6 @@ main {
     right: 7px;
 }
 
-#stocks-grid > .empty-slot {
-    position: relative;
-    margin: 0;
-    overflow: hidden;
-    border-style: dashed;
-    border-color: var(--card-bg-highlight);
-    background-color: transparent;
-}
-
-#stocks-grid > .empty-slot:before,
-#stocks-grid > .empty-slot:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 50%;
-    padding: 2px; /*adjust this for the boldness of the cross*/
-    background-color: var(--card-bg-highlight);
-    transform-origin: center;
-}
-
-#stocks-grid > .empty-slot:before {
-    transform: translate(-50%, -50%) rotate(90deg);
-}
-
-#stocks-grid > .empty-slot:after {
-    transform: translate(-50%, -50%) rotate(0deg);
-}
-
-#stocks-grid > li.empty-slot > button,
-#stocks-grid > li.empty-slot > section {
-    display: none;
-}
 
 #add-stock-dialog {
     position: fixed;
@@ -270,11 +271,11 @@ main {
     margin-top: 1rem;
     padding: 0.5rem;
     width: 100%;
-    border: 1px solid var(--card-bg-highlight);
-    border-radius: 4px;
-    background-color: var(--card-bg);
+    border: none;
+    border-bottom: 2px solid var(--card-bg-highlight);
+    background-color: transparent;
     color: var(--text-color);
-    font-size: 1.3rem;
+    font-size: x-large
 }
 
 /* Stock Details */
@@ -285,7 +286,7 @@ main {
 
 .stock-name {
     margin: 1rem auto;
-    color: var(--text-color);
+    color: var(--secondary-text-color);
     font-size: medium;
     overflow: hidden;
     text-overflow: ellipsis;
