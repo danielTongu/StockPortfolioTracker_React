@@ -84,7 +84,7 @@ button[data-button-text='replace'] {
   display: block;
   margin-top: 1rem;
   width: 100%;
-  color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #button-home {
@@ -103,7 +103,7 @@ button[data-button-text='replace'] {
   right: 1rem;
   border-radius: 50%;
   background-color: var(--card-bg-highlight);
-  color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .close-button:before,
@@ -276,8 +276,8 @@ main {
 }
 .stock-name {
   margin: 1rem auto;
-  color: var(--hover-bg-color);
-  font-size: 1.5rem;
+  color: var(--text-color);
+  font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
 }
