@@ -104,6 +104,7 @@ button[data-button-text='replace'] {
   border-radius: 50%;
   background-color: var(--card-bg-highlight);
   color: var(--text-color);
+  border: 1px solid var(--header-bg);
 }
 
 .button-close:before,
@@ -172,15 +173,28 @@ main {
 }
 
 #stocks-grid li > section {
+  position: relative;;
   border: 1px solid var(--header-bg);
   border-radius: 5px;
   list-style: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /*overflow: hidden;*/
+  /*text-overflow: ellipsis;*/
 }
 
 #stocks-grid li > section:hover {
   border-color: var(--higlight-button);
+}
+
+#stocks-grid li > section:hover::after {
+  content: "show details";
+  font-size: small;
+  border-radius: 7px;
+  background-color: var(--higlight-button);
+  color: var(--bg-color);
+  position: absolute;
+  bottom: -7px;
+  left: 7px;
+  right: 7px;
 }
 
 #stocks-grid > .empty-slot {
