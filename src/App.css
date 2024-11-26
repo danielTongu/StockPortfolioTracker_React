@@ -37,7 +37,7 @@
 }
 
 h1 {
-  color: var(--hover-bg-color);
+  color: var(--text-color);
 }
 
 body {
