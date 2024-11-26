@@ -361,6 +361,7 @@ main {
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
+  background-color: var(--card-bg-highlight);
 }
 
 #stock-details [data-period].active,
