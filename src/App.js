@@ -288,7 +288,7 @@ function StockSlot(props) {
                         e.stopPropagation();
                         onReplace(slotId);
                     }}></button>
-                    <button className="close-button" onClick={function (e) {
+                    <button className="button-close" onClick={function (e) {
                         e.stopPropagation();
                         onRemove(slotId);
                     }}></button>
@@ -319,7 +319,7 @@ function StockDialog(props) {
     return (
         <dialog id='add-stock-dialog' className={'open'}>
             <section>
-                <button className='close-button' onClick={onClose}></button>
+                <button className='button-close' onClick={onClose}></button>
                 <p>Add or Replace Stock</p>
                 <input
                     id='stock-input'
