@@ -72,6 +72,7 @@ function App() {
         if (!inputSymbol) {
             resultMessage = "Please enter a valid stock symbol.";
         } else if (stockSymbols.some(stock => stock && stock.symbol === inputSymbol)) {
+            resultMessage = "Duplicate stock symbol.";
             closeAddModal(); // Dont proceed with duplicates
         } else {
             try {
