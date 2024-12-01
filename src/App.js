@@ -1,4 +1,3 @@
-
 /**
  * File: App.js
  *
@@ -11,21 +10,15 @@
  *  -   Leverage the Alpha Vantage API for accurate and up-to-date stock market data.
  */
 
-
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 import './App.css';
 
-
-
-
 const API_KEY = process.env.REACT_APP_API_KEY;
 const MAX_STOCK_SYMBOL_LENGTH = 20;
 const NUM_STOCKS = 10;
-
-
-
+const LOCAL_STORAGE_KEY = 'stockTracker_stocks'; // Key for localStorage
 
 function App() {
     // State variables
@@ -37,7 +30,39 @@ function App() {
     const [stockInput, setStockInput] = useState(""); // User input for stock symbol
     const [isLoading, setIsLoading] = useState(false); // Loading state for data fetching
 
+    // Effect to load stocks from localStorage on component mount
+    useEffect(() => {
+        const storedStocks = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (storedStocks) {
+            try {
+                const parsedStocks = JSON.parse(storedStocks);
+                // Ensure the parsed data is an array with a maximum length of NUM_STOCKS
+                if (Array.isArray(parsedStocks)) {
+                    setStockSymbols(prev => {
+                        const updatedSymbols = [...prev];
+                        parsedStocks.slice(0, NUM_STOCKS).forEach((stock, index) => {
+                            updatedSymbols[index] = stock;
+                        });
+                        return updatedSymbols;
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to parse stored stocks:", error);
+                // Optionally, you can clear the invalid data
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
+            }
+        }
+    }, []);
 
+    // Effect to save stocks to localStorage whenever stockSymbols change
+    useEffect(() => {
+        try {
+            const stocksToStore = stockSymbols.filter(stock => stock !== null);
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stocksToStore));
+        } catch (error) {
+            console.error("Failed to save stocks to localStorage:", error);
+        }
+    }, [stockSymbols]);
 
     // Function to open the add/replace stock dialog
     function openAddOrReplaceModal(slotId) {
@@ -46,23 +71,17 @@ function App() {
         setStockInput("");
     }
 
-
-
     // Function to close the add stock dialog
     function closeAddModal() {
         setIsDialogOpen(false);
         setStockInput("");
     }
 
-
-
     // Handle changes in the stock input field
     function handleStockInputChange(event) {
         const inputValue = event.target.value.toUpperCase();
         setStockInput(inputValue.slice(0, MAX_STOCK_SYMBOL_LENGTH)); // Enforce the max length
     }
-
-
 
     // Add or replace a stock in the grid
     async function addOrReplaceStock() {
@@ -73,7 +92,7 @@ function App() {
             resultMessage = "Please enter a valid stock symbol.";
         } else if (stockSymbols.some(stock => stock && stock.symbol === inputSymbol)) {
             resultMessage = "Duplicate stock symbol.";
-            closeAddModal(); // Dont proceed with duplicates
+            closeAddModal(); // Don't proceed with duplicates
         } else {
             try {
                 const stockData = await fetchStockData({
@@ -102,8 +121,6 @@ function App() {
         if (resultMessage) alert(resultMessage);
     }
 
-
-
     // Remove a stock from a slot
     function handleRemoveStock(slotId) {
         setStockSymbols(function (prevSymbols) {
@@ -113,14 +130,10 @@ function App() {
         });
     }
 
-
-
     // Handle time frame selection
     function handleTimeFrameClick(period) {
         setTimeFrame(period);
     }
-
-
 
     // Effect to fetch data when timeFrame changes and a stock is selected
     useEffect(function () {
@@ -141,8 +154,6 @@ function App() {
         }
     }, [timeFrame]);
 
-
-
     // Handle clicking on a stock in the grid to view details
     async function handleStockClick(stock) {
         setIsLoading(true);
@@ -161,13 +172,10 @@ function App() {
         }
     }
 
-
-
     // Show the stocks grid (hide details view)
     function showStocksGrid() {
         setSelectedStock(null);
     }
-
 
     // Render the component
     return (
@@ -178,10 +186,10 @@ function App() {
                     <button
                         id="button-home"
                         onClick={showStocksGrid}
-                        style={{display: selectedStock ? "inline" : "none"}}
+                        style={{ display: selectedStock ? "inline" : "none" }}
                     >
                         <svg height="30" viewBox="0 0 24 24" width="30">
-                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/>
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z" />
                         </svg>
                     </button>
                 </div>
@@ -222,11 +230,8 @@ function App() {
     );
 }
 
-
-
-
 function Grid(props) {
-    const {stocks, onAddStock, onStockSelect, onRemoveStock} = props;
+    const { stocks, onAddStock, onStockSelect, onRemoveStock } = props;
 
     return (
         <ul id="stocks-grid">
@@ -254,11 +259,8 @@ function Grid(props) {
     );
 }
 
-
-
-
 function StockSlot(props) {
-    const {slotId, symbol, stockName, price, change, onAdd, onFetchDetails, onRemove, onReplace} = props;
+    const { slotId, symbol, stockName, price, change, onAdd, onFetchDetails, onRemove, onReplace } = props;
 
     const isStockAdded = Boolean(symbol);
 
@@ -301,11 +303,8 @@ function StockSlot(props) {
     );
 }
 
-
-
-
 function StockDialog(props) {
-    const {onSubmit, onClose, stockInput, handleStockInputChange} = props;
+    const { onSubmit, onClose, stockInput, handleStockInputChange } = props;
 
     // Create a ref for the input field
     const inputRef = useRef(null);
@@ -348,11 +347,8 @@ function StockDialog(props) {
     );
 }
 
-
-
-
 function StockDetails(props) {
-    const {stockDetails, timeFrame, handleTimeFrameClick, isLoading} = props;
+    const { stockDetails, timeFrame, handleTimeFrameClick, isLoading } = props;
 
     const chartRef = useRef(null);
     const canvasRef = useRef(null);
@@ -371,8 +367,6 @@ function StockDetails(props) {
             }
         };
     }, [stockDetails]);
-
-
 
     // Function to render the chart
     function renderChart(data) {
@@ -406,7 +400,7 @@ function StockDetails(props) {
             };
         });
 
-        const {borderColor, backgroundColor} = getOverallColor(data.timeSeries, data.dates);
+        const { borderColor, backgroundColor } = getOverallColor(data.timeSeries, data.dates);
 
         chartRef.current = new Chart(ctx, {
             type: 'line',
@@ -429,12 +423,12 @@ function StockDetails(props) {
                 scales: {
                     x: {
                         type: 'time',
-                        time: {unit: data.timeUnit},
+                        time: { unit: data.timeUnit },
                         title: {
                             display: true,
                             text: 'Time',
                             color: '#1f1f1f',
-                            font: {size: 20}
+                            font: { size: 20 }
                         },
                         grid: {
                             color: 'rgb(31,31,31)',
@@ -453,7 +447,7 @@ function StockDetails(props) {
                             display: true,
                             text: 'Price',
                             color: '#1f1f1f',
-                            font: {size: 20}
+                            font: { size: 20 }
                         },
                         grid: {
                             color: 'rgb(31,31,31)',
@@ -496,14 +490,12 @@ function StockDetails(props) {
                         }
                     },
                     legend: {
-                        labels: {color: '#1f1f1f'}
+                        labels: { color: '#1f1f1f' }
                     }
                 }
             }
         });
     }
-
-
 
     // Function to get color for the chart based on overall percentage change
     function getOverallColor(timeSeries, dates) {
@@ -520,7 +512,7 @@ function StockDetails(props) {
             borderColor = 'blue';
             backgroundColor = 'rgba(0, 0, 255, 0.1)';
         }
-        return {borderColor, backgroundColor};
+        return { borderColor, backgroundColor };
     }
 
     return (
@@ -574,10 +566,7 @@ function StockDetails(props) {
     );
 }
 
-
 // Helper functions
-
-
 
 /**
  * Helper function to render a single stat
@@ -589,9 +578,6 @@ function renderStat(label, value) {
     return (<li key={label} data-stat={label}>{value !== null && value !== undefined ? value : "N/A"}</li>);
 }
 
-
-
-
 /**
  * Format a price value.
  * @param {number|null} price - The price to format.
@@ -601,20 +587,14 @@ function formatPrice(price) {
     return price !== null && price !== undefined ? `${price.toFixed(2)}` : "N/A";
 }
 
-
-
-
 /**
  * Format a percentage change value.
  * @param {number|null} changePercent - The percentage change.
  * @returns {string} - Formatted percentage change.
  */
 function formatChangePercent(changePercent) {
-    return changePercent !== null && changePercent !== undefined ? `${changePercent.toFixed(2)}` : "0.00";
+    return changePercent !== null && changePercent !== undefined ? `${changePercent.toFixed(2)}%` : "0.00%";
 }
-
-
-
 
 /**
  * Get CSS class for price change based on its value.
@@ -626,9 +606,6 @@ function getPriceChangeClass(change) {
     if (change < 0) return 'negative';
     return '';
 }
-
-
-
 
 /**
  * Format a range value.
@@ -643,9 +620,6 @@ function formatRange(low, high) {
     return "N/A";
 }
 
-
-
-
 /**
  * Format a number with optional decimal places.
  * @param {number|null} value - The number to format.
@@ -654,11 +628,8 @@ function formatRange(low, high) {
  */
 function formatNumber(value, decimals = 0) {
     return value !== null && value !== undefined ?
-        value.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}) : "N/A";
+        value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : "N/A";
 }
-
-
-
 
 /**
  * Fetch stock data including time series and overview information.
@@ -669,15 +640,15 @@ function formatNumber(value, decimals = 0) {
  * @returns {Object} - Stock data including various statistics.
  */
 async function fetchStockData(params) {
-    const {apiKey, query, timeFrame} = params;
+    const { apiKey, query, timeFrame } = params;
 
     try {
         // Use the helper function to search for the stock symbol
-        const {symbol, name} = await searchSymbol(apiKey, query);
+        const { symbol, name } = await searchSymbol(apiKey, query);
 
         // Get parameters for the selected time frame
         const timeFrameParams = getTimeFrameParams(timeFrame);
-        const {endpoint, interval, dateRange, timeUnit, ticks} = timeFrameParams;
+        const { endpoint, interval, dateRange, timeUnit, ticks } = timeFrameParams;
 
         // Determine the volume key based on the endpoint
         const volumeKey = (endpoint.includes('ADJUSTED')) ? '6. volume' : '5. volume';
@@ -764,9 +735,6 @@ async function fetchStockData(params) {
     }
 }
 
-
-
-
 /**
  * Separate function to search for a stock symbol.
  * @param {string} apiKey - Alpha Vantage API key.
@@ -784,11 +752,8 @@ async function searchSymbol(apiKey, query) {
 
     const symbol = searchData.bestMatches[0]['1. symbol'];
     const name = searchData.bestMatches[0]['2. name'];
-    return {symbol, name};
+    return { symbol, name };
 }
-
-
-
 
 /**
  * Fetch overview data for a stock symbol.
@@ -808,9 +773,6 @@ async function fetchStockOverview(apiKey, symbol) {
 
     return data;
 }
-
-
-
 
 /**
  * Determine API parameters based on the selected time frame.
@@ -882,11 +844,8 @@ function getTimeFrameParams(timeFrame = '1D') {
             throw new Error('Invalid time frame: ' + timeFrame);
     }
 
-    return {endpoint, interval, timeUnit, dateRange, ticks};
+    return { endpoint, interval, timeUnit, dateRange, ticks };
 }
-
-
-
 
 /**
  * Calculate the percentage change between the first and last dates.
@@ -910,9 +869,6 @@ function calculatePercentageChange(timeSeries, dates) {
 
     return ((lastPrice - firstPrice) / firstPrice) * 100;
 }
-
-
-
 
 /**
  * Compute detailed statistics from the time series data.
@@ -989,9 +945,6 @@ function computeDetailedStats(timeSeries, dates, volumeKey) {
         avgVolume
     };
 }
-
-
-
 
 /**
  * Format Market Capitalization to a readable format.
