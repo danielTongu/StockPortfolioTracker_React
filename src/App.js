@@ -15,12 +15,17 @@ import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 import './App.css';
 
-const API_KEY = process.env.REACT_APP_API_KEY;
-const MAX_STOCK_SYMBOL_LENGTH = 20;
+
+
+const API_KEY = process.env.REACT_APP_API_KEY; // Environment variable saved on local machine
+const MAX_STOCK_SYMBOL_LENGTH = 20; //User can key upto 20 characters on symbol search
 const NUM_STOCKS = 10;
-const LOCAL_STORAGE_KEY = 'stockTracker_stocks'; // Key for localStorage
+const LOCAL_STORAGE_KEY = 'stockTracker_stocks'; // Key for localStorage to retain stock symbols on page refresh.
+
+
 
 function App() {
+
     // State variables
     const [stockSymbols, setStockSymbols] = useState(Array(NUM_STOCKS).fill(null)); // Stores up to 10 stocks
     const [selectedStock, setSelectedStock] = useState(null); // Currently selected stock for detailed view
@@ -29,6 +34,8 @@ function App() {
     const [currentSlot, setCurrentSlot] = useState(null); // Slot index for adding or replacing a stock
     const [stockInput, setStockInput] = useState(""); // User input for stock symbol
     const [isLoading, setIsLoading] = useState(false); // Loading state for data fetching
+
+
 
     // Effect to load stocks from localStorage on component mount
     useEffect(() => {
@@ -54,6 +61,9 @@ function App() {
         }
     }, []);
 
+
+
+
     // Effect to save stocks to localStorage whenever stockSymbols change
     useEffect(() => {
         try {
@@ -64,6 +74,10 @@ function App() {
         }
     }, [stockSymbols]);
 
+
+
+
+
     // Function to open the add/replace stock dialog
     function openAddOrReplaceModal(slotId) {
         setCurrentSlot(slotId);
@@ -71,17 +85,26 @@ function App() {
         setStockInput("");
     }
 
+
+
+
     // Function to close the add stock dialog
     function closeAddModal() {
         setIsDialogOpen(false);
         setStockInput("");
     }
 
+
+
+
     // Handle changes in the stock input field
     function handleStockInputChange(event) {
         const inputValue = event.target.value.toUpperCase();
         setStockInput(inputValue.slice(0, MAX_STOCK_SYMBOL_LENGTH)); // Enforce the max length
     }
+
+
+
 
     // Add or replace a stock in the grid
     async function addOrReplaceStock() {
@@ -121,6 +144,9 @@ function App() {
         if (resultMessage) alert(resultMessage);
     }
 
+
+
+
     // Remove a stock from a slot
     function handleRemoveStock(slotId) {
         setStockSymbols(function (prevSymbols) {
@@ -130,10 +156,16 @@ function App() {
         });
     }
 
+
+
+
     // Handle time frame selection
     function handleTimeFrameClick(period) {
         setTimeFrame(period);
     }
+
+
+
 
     // Effect to fetch data when timeFrame changes and a stock is selected
     useEffect(function () {
@@ -154,6 +186,10 @@ function App() {
         }
     }, [timeFrame]);
 
+
+
+
+
     // Handle clicking on a stock in the grid to view details
     async function handleStockClick(stock) {
         setIsLoading(true);
@@ -172,10 +208,16 @@ function App() {
         }
     }
 
+
+
+
     // Show the stocks grid (hide details view)
     function showStocksGrid() {
         setSelectedStock(null);
     }
+
+
+
 
     // Render the component
     return (
@@ -230,6 +272,11 @@ function App() {
     );
 }
 
+
+
+
+
+
 function Grid(props) {
     const { stocks, onAddStock, onStockSelect, onRemoveStock } = props;
 
@@ -258,6 +305,10 @@ function Grid(props) {
         </ul>
     );
 }
+
+
+
+
 
 function StockSlot(props) {
     const { slotId, symbol, stockName, price, change, onAdd, onFetchDetails, onRemove, onReplace } = props;
@@ -303,11 +354,16 @@ function StockSlot(props) {
     );
 }
 
+
+
+
+
 function StockDialog(props) {
     const { onSubmit, onClose, stockInput, handleStockInputChange } = props;
 
     // Create a ref for the input field
     const inputRef = useRef(null);
+
 
     // Automatically focus on the input field when the dialog opens
     useEffect(() => {
@@ -316,12 +372,15 @@ function StockDialog(props) {
         }
     }, []);
 
+
+
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
             onSubmit(); // Trigger the submission
         }
     };
+
 
     return (
         <dialog id='add-stock-dialog' className={'open'}>
@@ -347,12 +406,18 @@ function StockDialog(props) {
     );
 }
 
+
+
+
+
 function StockDetails(props) {
     const { stockDetails, timeFrame, handleTimeFrameClick, isLoading } = props;
 
     const chartRef = useRef(null);
     const canvasRef = useRef(null);
     const additionalStatsRef = useRef([]);
+
+
 
     // Effect to render the chart when stockDetails change
     useEffect(() => {
@@ -367,6 +432,9 @@ function StockDetails(props) {
             }
         };
     }, [stockDetails]);
+
+
+
 
     // Function to render the chart
     function renderChart(data) {
@@ -387,6 +455,7 @@ function StockDetails(props) {
         // Store stats in a ref to be accessible in the tooltip callback
         additionalStatsRef.current = data.dates.map(function (date) {
             const dataPoint = data.timeSeries[date];
+
             return {
                 date: date,
                 open: parseFloat(dataPoint['1. open']),
@@ -404,6 +473,7 @@ function StockDetails(props) {
 
         chartRef.current = new Chart(ctx, {
             type: 'line',
+
             data: {
                 labels: data.dates,
                 datasets: [{
@@ -417,10 +487,12 @@ function StockDetails(props) {
                     tension: 0.1 // Smooth curves
                 }]
             },
+
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
+
                     x: {
                         type: 'time',
                         time: { unit: data.timeUnit },
@@ -441,6 +513,7 @@ function StockDetails(props) {
                             autoSkip: true
                         }
                     },
+
                     y: {
                         beginAtZero: false,
                         title: {
@@ -462,6 +535,7 @@ function StockDetails(props) {
                         }
                     }
                 },
+
                 plugins: {
                     tooltip: {
                         backgroundColor: 'rgba(255,255,255, 0.9)',
@@ -489,6 +563,7 @@ function StockDetails(props) {
                             }
                         }
                     },
+
                     legend: {
                         labels: { color: '#1f1f1f' }
                     }
@@ -496,6 +571,9 @@ function StockDetails(props) {
             }
         });
     }
+
+
+
 
     // Function to get color for the chart based on overall percentage change
     function getOverallColor(timeSeries, dates) {
@@ -514,6 +592,8 @@ function StockDetails(props) {
         }
         return { borderColor, backgroundColor };
     }
+
+
 
     return (
         <section id="stock-details">
@@ -566,6 +646,10 @@ function StockDetails(props) {
     );
 }
 
+
+
+
+
 // Helper functions
 
 /**
@@ -578,6 +662,9 @@ function renderStat(label, value) {
     return (<li key={label} data-stat={label}>{value !== null && value !== undefined ? value : "N/A"}</li>);
 }
 
+
+
+
 /**
  * Format a price value.
  * @param {number|null} price - The price to format.
@@ -587,6 +674,9 @@ function formatPrice(price) {
     return price !== null && price !== undefined ? `${price.toFixed(2)}` : "N/A";
 }
 
+
+
+
 /**
  * Format a percentage change value.
  * @param {number|null} changePercent - The percentage change.
@@ -595,6 +685,8 @@ function formatPrice(price) {
 function formatChangePercent(changePercent) {
     return changePercent !== null && changePercent !== undefined ? `${changePercent.toFixed(2)}%` : "0.00%";
 }
+
+
 
 /**
  * Get CSS class for price change based on its value.
@@ -606,6 +698,9 @@ function getPriceChangeClass(change) {
     if (change < 0) return 'negative';
     return '';
 }
+
+
+
 
 /**
  * Format a range value.
@@ -620,6 +715,9 @@ function formatRange(low, high) {
     return "N/A";
 }
 
+
+
+
 /**
  * Format a number with optional decimal places.
  * @param {number|null} value - The number to format.
@@ -630,6 +728,9 @@ function formatNumber(value, decimals = 0) {
     return value !== null && value !== undefined ?
         value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : "N/A";
 }
+
+
+
 
 /**
  * Fetch stock data including time series and overview information.
@@ -658,9 +759,11 @@ async function fetchStockData(params) {
             ? `https://www.alphavantage.co/query?function=${endpoint}&symbol=${symbol}&interval=${interval}&apikey=${apiKey}`
             : `https://www.alphavantage.co/query?function=${endpoint}&symbol=${symbol}&apikey=${apiKey}`;
 
+
         // Fetch the time series data
         const response = await fetch(url);
         const data = await response.json();
+
 
         const timeSeriesKeyMap = {
             'TIME_SERIES_INTRADAY': `Time Series (${interval})`,
@@ -672,12 +775,15 @@ async function fetchStockData(params) {
             'TIME_SERIES_MONTHLY_ADJUSTED': 'Monthly Adjusted Time Series'
         };
 
+
         const timeSeriesKey = timeSeriesKeyMap[endpoint];
         const timeSeries = data[timeSeriesKey];
+
 
         if (!timeSeries) {
             throw new Error(`Time series data unavailable for "${timeFrame}".`);
         }
+
 
         // Get dates for the chart
         const allDates = Object.keys(timeSeries);
@@ -735,6 +841,9 @@ async function fetchStockData(params) {
     }
 }
 
+
+
+
 /**
  * Separate function to search for a stock symbol.
  * @param {string} apiKey - Alpha Vantage API key.
@@ -755,6 +864,9 @@ async function searchSymbol(apiKey, query) {
     return { symbol, name };
 }
 
+
+
+
 /**
  * Fetch overview data for a stock symbol.
  * @param {string} apiKey - Alpha Vantage API key.
@@ -773,6 +885,10 @@ async function fetchStockOverview(apiKey, symbol) {
 
     return data;
 }
+
+
+
+
 
 /**
  * Determine API parameters based on the selected time frame.
@@ -794,6 +910,7 @@ function getTimeFrameParams(timeFrame = '1D') {
             timeUnit = 'hour';
             ticks = 7;
             break;
+
         case '5D':
             endpoint = 'TIME_SERIES_INTRADAY';
             interval = '60min';
@@ -801,18 +918,21 @@ function getTimeFrameParams(timeFrame = '1D') {
             timeUnit = 'hour';
             ticks = 35; // 5 days * 7 intervals per day
             break;
+
         case '1M':
             endpoint = 'TIME_SERIES_DAILY_ADJUSTED';
             dateRange = 22; // Approximate trading days in a month
             timeUnit = 'day';
             ticks = 22;
             break;
+
         case '3M':
             endpoint = 'TIME_SERIES_DAILY_ADJUSTED';
             dateRange = 66; // Approximate trading days in 3 months
             timeUnit = 'week';
             ticks = 13; // Approximate weeks in 3 months
             break;
+
         case 'YTD':
             const currentDate = new Date();
             const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
@@ -822,18 +942,21 @@ function getTimeFrameParams(timeFrame = '1D') {
             ticks = currentDate.getMonth() + 1; // Number of months since start of year
             endpoint = 'TIME_SERIES_DAILY_ADJUSTED';
             break;
+
         case '1Y':
             endpoint = 'TIME_SERIES_DAILY_ADJUSTED';
             dateRange = 365;
             timeUnit = 'month';
             ticks = 12;
             break;
+
         case '5Y':
             endpoint = 'TIME_SERIES_WEEKLY_ADJUSTED';
             dateRange = 5 * 52;
             timeUnit = 'year';
             ticks = 5;
             break;
+
         case 'ALL':
             endpoint = 'TIME_SERIES_MONTHLY_ADJUSTED';
             dateRange = Infinity;
@@ -846,6 +969,10 @@ function getTimeFrameParams(timeFrame = '1D') {
 
     return { endpoint, interval, timeUnit, dateRange, ticks };
 }
+
+
+
+
 
 /**
  * Calculate the percentage change between the first and last dates.
@@ -869,6 +996,10 @@ function calculatePercentageChange(timeSeries, dates) {
 
     return ((lastPrice - firstPrice) / firstPrice) * 100;
 }
+
+
+
+
 
 /**
  * Compute detailed statistics from the time series data.
@@ -902,6 +1033,7 @@ function computeDetailedStats(timeSeries, dates, volumeKey) {
     const openPrice = latestData ? parseFloat(latestData['1. open']) : null;
     const volume = latestData ? parseInt(latestData[volumeKey]) : null;
 
+
     // Adjusted Close
     const adjustedClose = latestData && latestData['5. adjusted close'] !== undefined
         ? parseFloat(latestData['5. adjusted close'])
@@ -919,9 +1051,11 @@ function computeDetailedStats(timeSeries, dates, volumeKey) {
 
     // 52-week Range
     const past52Weeks = Object.keys(timeSeries).slice(-260); // Approximately 260 trading days in 52 weeks
+
     const weekLow = past52Weeks.length > 0
         ? Math.min(...past52Weeks.map(date => parseFloat(timeSeries[date]['3. low'])))
         : null;
+
     const weekHigh = past52Weeks.length > 0
         ? Math.max(...past52Weeks.map(date => parseFloat(timeSeries[date]['2. high'])))
         : null;
@@ -930,6 +1064,7 @@ function computeDetailedStats(timeSeries, dates, volumeKey) {
     const avgVolume = dates.length > 0
         ? dates.reduce((sum, date) => sum + parseInt(timeSeries[date][volumeKey] || 0), 0) / dates.length
         : null;
+
 
     return {
         previousClose,
@@ -945,6 +1080,9 @@ function computeDetailedStats(timeSeries, dates, volumeKey) {
         avgVolume
     };
 }
+
+
+
 
 /**
  * Format Market Capitalization to a readable format.
@@ -968,5 +1106,6 @@ function formatMarketCap(value) {
         return value.toString(); // Return the value as-is for smaller numbers
     }
 }
+
 
 export default App;
