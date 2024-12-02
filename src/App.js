@@ -27,13 +27,13 @@ const LOCAL_STORAGE_KEY = 'stockTracker_stocks'; // Key for localStorage to reta
 function App() {
 
     // State variables
-    const [stockSymbols, setStockSymbols] = useState(Array(NUM_STOCKS).fill(null)); // Stores up to 10 stocks
-    const [selectedStock, setSelectedStock] = useState(null); // Currently selected stock for detailed view
-    const [timeFrame, setTimeFrame] = useState("1D"); // Selected time frame for data
-    const [isDialogOpen, setIsDialogOpen] = useState(false); // Controls visibility of the add stock dialog
-    const [currentSlot, setCurrentSlot] = useState(null); // Slot index for adding or replacing a stock
-    const [stockInput, setStockInput] = useState(""); // User input for stock symbol
-    const [isLoading, setIsLoading] = useState(false); // Loading state for data fetching
+    const [ stockSymbols, setStockSymbols ]   = useState( Array(NUM_STOCKS).fill(null) ); // Stores up to 10 stocks
+    const [ selectedStock, setSelectedStock ]        = useState(null); // Currently selected stock for detailed view
+    const [ timeFrame, setTimeFrame ]         = useState("1D"); // Selected time frame for data
+    const [ isDialogOpen, setIsDialogOpen ] = useState(false); // Controls visibility of the add stock dialog
+    const [ currentSlot, setCurrentSlot ]            = useState(null); // Slot index for adding or replacing a stock
+    const [ stockInput, setStockInput ]       = useState(""); // User input for stock symbol
+    const [ isLoading, setIsLoading ]       = useState(false); // Loading state for data fetching
 
 
 
@@ -683,7 +683,7 @@ function formatPrice(price) {
  * @returns {string} - Formatted percentage change.
  */
 function formatChangePercent(changePercent) {
-    return changePercent !== null && changePercent !== undefined ? `${changePercent.toFixed(2)}%` : "0.00%";
+    return changePercent !== null && changePercent !== undefined ? `${changePercent.toFixed(2)}` : "0.00%";
 }
 
 
