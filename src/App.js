@@ -107,14 +107,19 @@ function App() {
 
 
     // Add or replace a stock in the grid
+    // Add or replace a stock in the grid
     async function addOrReplaceStock() {
         let resultMessage = ""; // Placeholder for return message
         let inputSymbol = stockInput.trim().toUpperCase();
 
         if (!inputSymbol) {
             resultMessage = "Please enter a valid stock symbol.";
-        } else if (stockSymbols.some(stock => stock && stock.symbol === inputSymbol)) {
-            resultMessage = "Duplicate stock symbol.";
+        } else if (
+            stockSymbols.some((stock, index) =>
+                stock && stock.symbol === inputSymbol && index !== currentSlot
+            )
+        ) {
+            resultMessage = "Duplicate stock symbol in another slot.";
             closeAddModal(); // Don't proceed with duplicates
         } else {
             try {
@@ -125,13 +130,14 @@ function App() {
                 });
 
                 if (stockData && stockData.symbol === inputSymbol) {
-                    setStockSymbols(prev => {
+                    setStockSymbols((prev) => {
                         const updatedSymbols = [...prev];
                         updatedSymbols[currentSlot] = stockData;
                         return updatedSymbols;
                     });
 
                     closeAddModal();
+
                 } else {
                     resultMessage = "No data found for the provided stock symbol.";
                 }
@@ -139,8 +145,6 @@ function App() {
                 resultMessage = `Error fetching stock data: ${error.message}`;
             }
         }
-
-        // Single exit point
         if (resultMessage) alert(resultMessage);
     }
 
