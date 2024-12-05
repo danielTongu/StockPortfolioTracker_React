@@ -39,7 +39,7 @@ function App() {
     const [stockSymbols, setStockSymbols] = useState(Array(NUM_STOCKS).fill(null)); // Stores up to 10 stocks
     const [selectedStock, setSelectedStock] = useState(null); // Currently selected stock for detailed view
     const [timeFrame, setTimeFrame] = useState('1D'); // Selected time frame for data
-    const [isDialogOpen, setIsDialogOpen] = useState(false); // Controls visibility of the add stock dialog
+    const [isDialogOpen,  setIsDialogOpen] = useState(false); // Controls visibility of the add stock dialog
     const [currentSlot, setCurrentSlot] = useState(null); // Slot index for adding or replacing a stock
     const [stockInput, setStockInput] = useState(''); // User input for stock symbol
     const [isLoading, setIsLoading] = useState(false); // Loading state for data fetching
@@ -48,7 +48,7 @@ function App() {
     useEffect(() => { loadStoredStocks(setStockSymbols); }, []);
 
     // Effect to save stocks to localStorage whenever stockSymbols change
-    useEffect(() => { saveStocksToLocalStorage(stockSymbols);}, [stockSymbols]);
+    useEffect(() => { saveStocksToLocalStorage(stockSymbols); }, [stockSymbols]);
 
     // Effect to fetch data when timeFrame changes and a stock is selected
     useEffect(() => { fetchSelectedStockData(selectedStock, timeFrame, setSelectedStock, setIsLoading); }, [timeFrame]);
@@ -509,7 +509,6 @@ function showStocksGrid(setSelectedStock) {
 
 
 
-
 /**
  * Fetches data when timeFrame changes and a stock is selected.
  * @param {object} selectedStock - The currently selected stock.
@@ -872,7 +871,6 @@ function formatRange(low, high) {
 
 
 
-
 /**
  * Format a number with optional decimal places.
  * @param {number|null} value - The number to format.
@@ -887,7 +885,6 @@ function formatNumber(value, decimals = 0) {
         })
         : 'N/A';
 }
-
 
 
 
@@ -920,7 +917,6 @@ function formatMarketCap(value) {
 
 
 
-
 /**
  * Calculate the percentage change between the first and last dates.
  * @param {Object} timeSeries - Time series data.
@@ -947,9 +943,7 @@ function calculatePercentageChange(timeSeries, dates) {
 
 
 
-
-
-/**
+ /**
  * Fetches stock data including time series and overview information.
  * @param {Object} params - Parameters for fetching stock data.
  * @param {string} params.apiKey - Alpha Vantage API key.
@@ -998,83 +992,9 @@ async function fetchStockData(params) {
             throw new Error(`Time series data unavailable for "${timeFrame}".`);
         }
 
-        // Get dates for the chart
+        // Use the helper function to get relevant dates
         const allDates = Object.keys(timeSeries);
-        let dates;
-
-        const currentDate = new Date();
-
-        if (timeFrame === '1D') {
-            const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= past24Hours;
-                })
-                .reverse(); // Chronological order
-
-            // If no data is available in the last 24 hours (e.g., weekends), use the most recent available data
-            if (dates.length === 0) {
-                dates = allDates.slice(0, 96).reverse(); // Approximate data points for 2 days at 15min intervals
-            }
-        } else if (timeFrame === '5D') {
-            const past5Days = new Date(currentDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= past5Days;
-                })
-                .reverse(); // Chronological order
-        } else if (timeFrame === '1M') {
-            const past1Month = new Date();
-            past1Month.setMonth(past1Month.getMonth() - 1);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= past1Month;
-                })
-                .reverse(); // Chronological order
-        } else if (timeFrame === '6M') {
-            const past6Months = new Date();
-            past6Months.setMonth(past6Months.getMonth() - 6);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= past6Months;
-                })
-                .reverse(); // Chronological order
-        } else if (timeFrame === 'YTD') {
-            const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= startOfYear;
-                })
-                .reverse(); // Chronological order
-        } else if (timeFrame === '1Y') {
-            const past1Year = new Date();
-            past1Year.setFullYear(past1Year.getFullYear() - 1);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= past1Year;
-                })
-                .reverse(); // Chronological order
-        } else if (timeFrame === '5Y') {
-            const past5Years = new Date();
-            past5Years.setFullYear(past5Years.getFullYear() - 5);
-            dates = allDates
-                .filter((dateStr) => {
-                    const date = new Date(dateStr);
-                    return date >= past5Years;
-                })
-                .reverse(); // Chronological order
-        } else if (timeFrame === 'ALL') {
-            dates = allDates.reverse(); // Chronological order
-        } else {
-            const slicedDates = dateRange === Infinity ? allDates : allDates.slice(0, dateRange);
-            dates = slicedDates.reverse(); // Chronological order
-        }
+        const dates = getChartDates(allDates, timeFrame);
 
         // Fetch overview data
         const overviewData = await fetchStockOverview(apiKey, symbol);
@@ -1088,7 +1008,7 @@ async function fetchStockData(params) {
         // Extract additional stats if available
         const beta = overviewData['Beta'] ? parseFloat(overviewData['Beta']) : null;
         const eps = overviewData['EPS'] ? parseFloat(overviewData['EPS']) : null;
-        const earningsDate = overviewData['EarningsDate'] || null; // Format as per API
+        const earningsDate = overviewData['EarningsDate'] || null;
         const targetEst = overviewData['AnalystTargetPrice']
             ? parseFloat(overviewData['AnalystTargetPrice'])
             : null;
@@ -1133,6 +1053,77 @@ async function fetchStockData(params) {
     }
 }
 
+
+
+
+/**
+ * Helper function to get relevant dates based on the timeframe.
+ * @param {Array<string>} allDates - Array of all date strings from the time series.
+ * @param {string} timeFrame - Time frame for the data (e.g., '1D', '5D', '1M', etc.).
+ * @returns {Array<string>} - Filtered and sorted array of date strings.
+ */
+function getChartDates(allDates, timeFrame) {
+    const currentDate = new Date();
+    let dates = [];
+
+    switch (timeFrame) {
+        case '1D': {
+            const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= past24Hours).reverse();
+
+            if (dates.length === 0) {
+                dates = allDates.slice(0, 96).reverse(); // Approx. 2 days at 15min intervals
+            }
+            break;
+        }
+        case '5D': {
+            const past5Days = new Date(currentDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= past5Days).reverse();
+            break;
+        }
+        case '1M': {
+            const past1Month = new Date();
+            past1Month.setMonth(past1Month.getMonth() - 1);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= past1Month).reverse();
+            break;
+        }
+        case '6M': {
+            const past6Months = new Date();
+            past6Months.setMonth(past6Months.getMonth() - 6);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= past6Months).reverse();
+            break;
+        }
+        case 'YTD': {
+            const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= startOfYear).reverse();
+            break;
+        }
+        case '1Y': {
+            const past1Year = new Date();
+            past1Year.setFullYear(past1Year.getFullYear() - 1);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= past1Year).reverse();
+            break;
+        }
+        case '5Y': {
+            const past5Years = new Date();
+            past5Years.setFullYear(past5Years.getFullYear() - 5);
+            dates = allDates.filter((dateStr) => new Date(dateStr) >= past5Years).reverse();
+            break;
+        }
+        case 'ALL': {
+            dates = allDates.reverse();
+            break;
+        }
+        default: {
+            const dateRange = Infinity; // Adjust this if necessary
+            const slicedDates = dateRange === Infinity ? allDates : allDates.slice(0, dateRange);
+            dates = slicedDates.reverse();
+            break;
+        }
+    }
+
+    return dates;
+}
 
 
 
@@ -1268,7 +1259,6 @@ function getTimeFrameParams(timeFrame = '1D') {
 
 
 
-
 /**
  * Compute detailed statistics from the time series data.
  * @param {Object} timeSeries - Time series data.
@@ -1353,5 +1343,7 @@ function computeDetailedStats(timeSeries, dates, volumeKey) {
         avgVolume,
     };
 }
+
+
 
 export default App;
